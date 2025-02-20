@@ -18,6 +18,12 @@ export async function fetchPlayerData(_: any, form: FormData) {
   const username = form.get("username") as string;
   const [gameName, tagLine] = username.split("#");
 
+  if (!gameName || !tagLine) {
+    return {
+      error: "Please specify the username in this format: username#tag",
+    };
+  }
+
   try {
     const cookies = [`ssid=${ssidCookie};clid=uw1`];
     const authTokens = await AUTH.COOKIE_REAUTH({ cookies });
@@ -31,6 +37,9 @@ export async function fetchPlayerData(_: any, form: FormData) {
       gameName,
       tagLine,
     });
+
+    if (accountAlias.data.length < 1) return { error: "User not found" };
+
     const puuid =
       "puuid" in accountAlias.data[0] ? accountAlias.data[0].puuid : "";
 
